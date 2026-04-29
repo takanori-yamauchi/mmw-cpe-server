@@ -6,6 +6,8 @@ const app = express();
 
 app.use(cors());        // ←これが超重要
 app.use(express.json());
+// ↓これを追加
+app.use(express.static('.'));
 
 // 確認用
 app.get('/', (req, res) => {
