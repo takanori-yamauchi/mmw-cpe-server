@@ -1,7 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const fs = require('fs');
+
 const app = express();
 
+app.use(cors());        // ←これが超重要
 app.use(express.json());
 
 // 確認用
@@ -37,4 +40,16 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`起動ポート: ${PORT}`);
+});
+
+// データ取得
+app.get('/api/data', (req, res) => {
+  if (!fs.existsSync('data.json')) {
+    return res.json([]);
+  }
+
+  const file = fs.readFileSync('data.json');
+  const data = JSON.parse(file);
+
+  res.json(data);
 });
