@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>データ表示</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 400px;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      margin-bottom: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>受信データ一覧</h1>
+
+<button onclick="loadData()">更新</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>名前</th>
+      <th>年齢</th>
+    </tr>
+  </thead>
+  <tbody id="table-body">
+  </tbody>
+</table>
+
+<script>
+function loadData() {
+  fetch('https://mmw-cpe-server-1.onrender.com/api/data') // ←ここを変更
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+
+      data.forEach(item => {
+        const row = document.createElement('tr');
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = item.name ?? '';
+
+        const ageCell = document.createElement('td');
+        ageCell.textContent = item.age ?? '';
+
+        row.appendChild(nameCell);
+        row.appendChild(ageCell);
+
+        tbody.appendChild(row);
+      });
+    })
+    .catch(err => {
+      console.error('エラー:', err);
+      alert('データ取得に失敗しました');
+    });
+}
+
+// 初回読み込み
+loadData();
+
+// 5秒ごと自動更新（不要なら消してOK）
+setInterval(loadData, 5000);
+</script>
+
+</body>
+</html>
