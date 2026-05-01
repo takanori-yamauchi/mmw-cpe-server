@@ -1,55 +1,59 @@
 const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
+const { Pool } = require('pg');
 
 const app = express();
+app.use(express.text()); // プレーンテキスト受信
 
-app.use(cors());        // ←これが超重要
-app.use(express.json());
-
-// 確認用
-app.get('/', (req, res) => {
-  res.send('サーバー動いてます 👍');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
-// JSON受信＆保存
-app.post('/api/data', (req, res) => {
-  const newData = req.body;
+// テキストパース
+function parseText(raw) {
+  const data = {};
+  raw.split(',').forEach(p => {
+    const [k, v] = p.split('=');
+    data[k.toLowerCase()] = v;
+  });
 
-  let dataArray = [];
+  return {
+    imei: data.imei,
+    rsrp: Number(data.rsrp),
+    sinr: Number(data.sinr)
+  };
+}
 
-  // 既存ファイルがあれば読み込み
-  if (fs.existsSync('data.json')) {
-    const file = fs.readFileSync('data.json');
-    dataArray = JSON.parse(file);
+// ★ DB保存
+app.post('/api/data', async (req, res) => {
+  try {
+    const d = parseText(req.body);
+
+    await pool.query(
+      'INSERT INTO app.measurements (imei, rsrp, sinr) VALUES ($1,$2,$3)',
+      [d.imei, d.rsrp, d.sinr]
+    );
+
+    res.json({ status: 'saved' });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('error');
   }
-
-  // 配列に追加
-  dataArray.push(newData);
-
-  // 保存
-  fs.writeFileSync('data.json', JSON.stringify(dataArray, null, 2));
-
-  console.log('保存データ:', newData);
-
-  res.json({ status: 'ok' });
 });
 
-// Render対応（重要）
-const PORT = process.env.PORT || 3000;
+// ★ Grafana用取得
+app.get('/api/data', async (req, res) => {
+  const result = await pool.query(`
+    SELECT
+      created_at as time,
+      rsrp,
+      sinr,
+      imei
+    FROM app.measurements
+    ORDER BY created_at
+  `);
 
-app.listen(PORT, () => {
-  console.log(`起動ポート: ${PORT}`);
+  res.json(result.rows);
 });
 
-// データ取得
-app.get('/api/data', (req, res) => {
-  if (!fs.existsSync('data.json')) {
-    return res.json([]);
-  }
-
-  const file = fs.readFileSync('data.json');
-  const data = JSON.parse(file);
-
-  res.json(data);
-});
+app.listen(process.env.PORT || 3000);
