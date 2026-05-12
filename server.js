@@ -90,7 +90,7 @@ app.post('/api/data', async (req, res) => {
     await pool.query(
       //'INSERT INTO app.measurements (imei, rsrp, sinr) VALUES ($1,$2,$3)',
       //[d.imei, d.rsrp, d.sinr]
-      'INSERT INTO app.measurements (percentIdle,MemTotal,MemFree,Raster_ARFCN,PCI,SSB,RSRP,SINR,ModemTemp,NRSub6AntTemp,NRmmWAntTemp,LteAntTemp,CPUTemp,SoftwareVer,HardwareVer) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,#13,$14,$15,%16)',
+      'INSERT INTO app.measurements (percentIdle,MemTotal,MemFree,Raster_ARFCN,PCI,SSB,RSRP,SINR,ModemTemp,NRSub6AntTemp,NRmmWAntTemp,LteAntTemp,CPUTemp,SoftwareVer,HardwareVer) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)',
       [d.percentIdle,d.MemTotal,d.MemFree,d.Raster_ARFCN,d.PCI,d.SSB,d.RSRP,d.SINR,d.ModemTemp,d.NRSub6AntTemp,d.NRmmWAntTemp,d.LteAntTemp,d.CPUTemp,d.SoftwareVer,d.HardwareVer,d.IMEI]
     );
 
