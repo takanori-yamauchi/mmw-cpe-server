@@ -89,7 +89,7 @@ app.post('/api/data', async (req, res) => {
 
     await pool.query(
       'INSERT INTO app.measurements (imei, rsrp, sinr,datetime,swversion,hwversion) VALUES ($1,$2,$3,$4,$5,$6)',
-      [d.imei, d.rsrp, d.sinr,d.datetime,d.swversion,d.hwversion]
+      [d.imei, d.rsrp, d.sinr, d.datetime, d.swversion, d.hwversion]
       //'INSERT INTO app.measurements (imei, rsrp, sinr) VALUES ($1,$2,$3)',
       //[d.imei, d.rsrp, d.sinr]
       //'INSERT INTO app.measurement-SB (percentIdle,MemTotal,MemFree,Raster_ARFCN,PCI,SSB,RSRP,SINR,ModemTemp,NRSub6AntTemp,NRmmWAntTemp,LteAntTemp,CPUTemp,SoftwareVer,HardwareVer,IMEI) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)',
