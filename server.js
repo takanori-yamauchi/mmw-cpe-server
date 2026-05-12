@@ -84,14 +84,14 @@ function parseLog(log) {
 // ★ DB保存
 app.post('/api/data', async (req, res) => {
   try {
-    //const d = parseText(req.body);
-    const d = parseLog(req.body);
+    const d = parseText(req.body);
+    //const d = parseLog(req.body);
 
     await pool.query(
-      //'INSERT INTO app.measurements (imei, rsrp, sinr) VALUES ($1,$2,$3)',
-      //[d.imei, d.rsrp, d.sinr]
-      'INSERT INTO app.measurement-SB (percentIdle,MemTotal,MemFree,Raster_ARFCN,PCI,SSB,RSRP,SINR,ModemTemp,NRSub6AntTemp,NRmmWAntTemp,LteAntTemp,CPUTemp,SoftwareVer,HardwareVer,IMEI) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)',
-      [d.percentIdle,d.MemTotal,d.MemFree,d.Raster_ARFCN,d.PCI,d.SSB,d.RSRP,d.SINR,d.ModemTemp,d.NRSub6AntTemp,d.NRmmWAntTemp,d.LteAntTemp,d.CPUTemp,d.SoftwareVer,d.HardwareVer,d.IMEI]
+      'INSERT INTO app.measurements (imei, rsrp, sinr) VALUES ($1,$2,$3)',
+      [d.imei, d.rsrp, d.sinr]
+      //'INSERT INTO app.measurement-SB (percentIdle,MemTotal,MemFree,Raster_ARFCN,PCI,SSB,RSRP,SINR,ModemTemp,NRSub6AntTemp,NRmmWAntTemp,LteAntTemp,CPUTemp,SoftwareVer,HardwareVer,IMEI) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)',
+      //[d.percentIdle,d.MemTotal,d.MemFree,d.Raster_ARFCN,d.PCI,d.SSB,d.RSRP,d.SINR,d.ModemTemp,d.NRSub6AntTemp,d.NRmmWAntTemp,d.LteAntTemp,d.CPUTemp,d.SoftwareVer,d.HardwareVer,d.IMEI]
     );
 
     res.json({ status: 'saved' });
@@ -109,7 +109,7 @@ app.get('/api/data', async (req, res) => {
       rsrp,
       sinr,
       imei
-    FROM app.measurement-SB
+    FROM app.measurements
     ORDER BY created_at
   `);
 
